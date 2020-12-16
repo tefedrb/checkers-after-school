@@ -93,11 +93,9 @@ function resetSelectedPieceProps() {
     selectedPiece.opacity = 1;
 }
 function getSelectedPiece() {
-    console.log(event)
     selectedPiece.pieceId = parseInt(event.target.id)
     selectedPiece.indexOfBoardPiece = findPiece(selectedPiece.pieceId)
     playerPieces[selectedPiece.pieceId].style.opacity = 1
-    console.log(selectedPiece.indexOfBoardPiece)
     isPieceKing()
 }
 function findPiece(pieceId) {
@@ -176,34 +174,23 @@ function getRealAvailableSpaces(allSpaces) {
     } else {
         // Short is a 7 square check & Far is a 9 square check
         if (allSpaces[pieceIndex + 9] && !allSpaces[pieceIndex + 9][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push(allSpaces[pieceIndex + 9])
-            trueAvailableSpaces[0].push("Far")
-            trueAvailableSpaces[0].push(pieceIndex + 9)
+            // Push a "Far" string and that piece index into space
+            allSpaces[pieceIndex + 9].push("Far", pieceIndex + 9);
+            trueAvailableSpaces.push(allSpaces[pieceIndex + 9]);
         }
         if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push(allSpaces[pieceIndex + 7])
-
-            if(trueAvailableSpaces[1]){
-                trueAvailableSpaces[1].push("Short")
-                trueAvailableSpaces[1].push(pieceIndex + 7)
-            }
+            allSpaces[pieceIndex + 7].push("Short", pieceIndex + 7);
+            trueAvailableSpaces.push(allSpaces[pieceIndex + 7]);
         }
         if (allSpaces[pieceIndex - 7] && !allSpaces[pieceIndex - 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push(allSpaces[pieceIndex - 7])
-            trueAvailableSpaces[2].push("Short")
-            trueAvailableSpaces[2].push(pieceIndex - 7)
+            allSpaces[pieceIndex - 7].push("Short", pieceIndex - 7);
+            trueAvailableSpaces.push(allSpaces[pieceIndex - 7]);
         }
         if (allSpaces[pieceIndex - 9] && !allSpaces[pieceIndex - 9][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push(allSpaces[pieceIndex - 9])
-
-            if(trueAvailableSpaces[3]){
-                trueAvailableSpaces[3].push("Far")
-                trueAvailableSpaces[3].push(pieceIndex - 9)
-            }
+            allSpaces[pieceIndex - 9].push("Far", pieceIndex - 9);
+            trueAvailableSpaces.push(allSpaces[pieceIndex - 9]);
         }
     }
-    console.log(trueAvailableSpaces, "at the end")
-    // console.log(trueAvailableSpaces, "true available spaces")
     getDouble(trueAvailableSpaces)
 }
 function getDouble(options) {
@@ -211,15 +198,16 @@ function getDouble(options) {
         lightUpOptions(board, false);
         const opposition = turn ? "blackPiece" : "redPiece";
         const myPieces = turn ? "redPiece" : "blackPiece";
-         for (let i = 0; i < options.length; i++) {
+        for (let i = 0; i < options.length; i++) {
              // 1. we are iterating here to check whether our current option (within options) is a black piece... if it is
              // 2. we want to check and see if we can jump over it
              // 3. the point here is we are trying to remove or add options to our "options" array
-             if (options[i] && options?.[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList.contains(opposition)) {
+            if (options[i] && options?.[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList.contains(opposition)) {
                 // Here the idea was to check whether the black piece was in a far position - if was we want to check 9 spaces ahead
                 // in order to see if that square was an option - this is essentially gives us a "jump option".
                 
                 if ((options[i][2]) == "Far") {
+                    // If the length here is 1 then we know the square is empty and ready to be occupied
                     if (board?.[options[i]?.[3] + 9].length === 1) {
                         // Push our "jump option" into our options...
                         options.push({"jump": board[options[i][3] + 9], "enemy": options[i]});
@@ -230,9 +218,7 @@ function getDouble(options) {
                         options.push({"jump": board[options[i][3] + 7], "enemy": options[i]});
                     }
                 }
-                const holdVal = options[i]
                 // Get rid of the black piece that we our evaluating... might want to store this as an option to remove if the player chooses to take it
-                console.log(holdVal, "holdVal")
                 options.splice(i,1);
             }
 
@@ -241,9 +227,9 @@ function getDouble(options) {
                 options.splice(i,1);
                 i--;
             }
-         }
-         console.log(options)
-         lightUpOptions(options, true);  
+        }
+        console.log(options, "<--- options")
+        lightUpOptions(options, true);  
     return options;
 }
 
@@ -251,7 +237,7 @@ function lightUpOptions(options, addOrRemove){
     for(let i = 0; i < options.length; i++){
         // Add class to squares
         if(options[i]?.jump){
-            console.log(options[i].jump[0], "here")
+            // console.log(options[i].jump[0], "here")
             options[i].jump[0].classList.add("moveOption");
         } else {
             if(addOrRemove){
