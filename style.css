@@ -1,0 +1,75 @@
+.boardRow {
+    background-color: blue;
+}
+table tr {
+    background-color: green;
+}
+td {
+    background-color: orange;
+    width: 65px;
+    height: 65px;
+}
+body {
+    height: 100vh;
+    width: 100vw;
+}
+.noPieceHere {
+    background-color: khaki;
+}
+.redPiece {
+    border-radius: 45px;
+    border: solid 4px;
+    border-color: red;
+    background-color: red;
+    width: 48px;
+    height: 48px;
+    margin: auto;
+}
+.blackPiece {
+    border-radius: 45px;
+    border: solid;
+    border-color: black;
+    background-color: black;
+    width: 48px;
+    height: 48px;
+    margin: auto;
+}
+.king {
+    border-color: yellow;
+    border-width: 4px;
+}
+.redTurnText {
+    color: red;
+}
+.blackTurnText {
+    color: black;
+}
+#divider {
+}
+section {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 520px;
+}
+.notTurn {
+    opacity: .3;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    height: 100vh;
+}
+.redTurn {
+    color: red;
+}
+.blackTurn {
+    color: black;
+}
+.moveOption {
+    border-radius: 100%;
+}
