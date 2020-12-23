@@ -43,6 +43,7 @@ const giveListeners = () => {
     if (turn) {
         // console.log(blackPieces, "here")
         for(let i = 0; i < blackPieces.length; i++){
+            console.log(blackPieces.length, "blackpieces removed")
             blackPieces[i].removeEventListener("click", getPlayerPieces);
         }
         for (let i = 0; i < redPieces.length; i++) {
@@ -50,6 +51,8 @@ const giveListeners = () => {
         }
     } else {
         for(let i = 0; i < redPieces.length; i++){
+            console.log(redPieces.length, "redPieces removed")
+
             redPieces[i].removeEventListener("click", getPlayerPieces);
         }
         for (let i = 0; i < blackPieces.length; i++) {
@@ -143,25 +146,26 @@ function getRealAvailableSpaces(allSpaces) {
     let trueAvailableSpaces = []
     // Saving the current state of the board
     board = allSpaces
-    console.log(selectedPiece.indexOfBoardPiece, "huh??")
     const pieceIndex = selectedPiece.indexOfBoardPiece;
     // I decided to use the spread operator to create a new array and therefore a new reference to the DOM nodes
     if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList?.contains("noPieceHere")) {
-        trueAvailableSpaces.push([...allSpaces[pieceIndex + 7], "Short", pieceIndex + 7])
+        trueAvailableSpaces.push([...allSpaces[pieceIndex + 7], "ShortPos", pieceIndex + 7])
     }
     if (allSpaces[pieceIndex - 7] && !allSpaces[pieceIndex - 7][0].classList?.contains("noPieceHere")) {
-        trueAvailableSpaces.push([...allSpaces[pieceIndex - 7], "Short", pieceIndex - 7])
+        trueAvailableSpaces.push([...allSpaces[pieceIndex - 7], "ShortNeg", pieceIndex - 7])
     }
     if (allSpaces[pieceIndex - 9] && !allSpaces[pieceIndex - 9][0].classList?.contains("noPieceHere")) {
-        trueAvailableSpaces.push([...allSpaces[pieceIndex - 9], "Far", pieceIndex - 9])
+        trueAvailableSpaces.push([...allSpaces[pieceIndex - 9], "FarNeg", pieceIndex - 9])
     }
     // Short is a 7 square check & Far is a 9 square check
     if (allSpaces[pieceIndex + 9] && !allSpaces[pieceIndex + 9][0].classList?.contains("noPieceHere")) {
         // Push a "Far" string and that piece index into space
-        trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], "Far", pieceIndex + 9]);
+        trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], "FarPos", pieceIndex + 9]);
     }
-    console.log(trueAvailableSpaces, "true")
+    // console.log(trueAvailableSpaces, "true")
+    // if(turn){
     getDouble(trueAvailableSpaces)
+    // }
 }
 function getDouble(options) {
     lightUpOptions(board, false);
@@ -175,23 +179,28 @@ function getDouble(options) {
         if (options[i] && options?.[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList?.contains(opposition)) {
             // Here the idea was to check whether the black piece was in a far position - if was we want to check 9 spaces ahead
             // in order to see if that square was an option - this is essentially gives us a "jump option".
-            if (options[i][2] == "Far") {
+            const shortOrFar = options[i][2];
+            if (shortOrFar === "FarNeg" || shortOrFar === "FarPos") {
                 // If the length here is 1 then we know the square is empty and ready to be occupied
-                if (board?.[options[i]?.[3] + 9].length === 1) {
+                const posFarSpace = board?.[options[i]?.[3] + 9].length === 1 && shortOrFar === "FarPos";
+                const negFarSpace = board?.[options[i]?.[3] - 9].length === 1 && shortOrFar === "FarNeg";
+                if (posFarSpace || negFarSpace) {
                     // Push our "jump option" into our options...
-                    const square = board[options[i][3] + 9];
+                    const square = board[options[i][3] + (posFarSpace ? 9 : -9)];
                     const jumpOption = {}
                     // Turning the square index number into a key and having it equal...
-                    jumpOption[options[i][3] + 9] = {"jump": square, "enemy": options[i]}
+                    jumpOption[options[i][3] + (posFarSpace ? 9 : -9)] = {"jump": square, "enemy": options[i]}
                     options.push(jumpOption);
                 }
-            } else if (options[i][2] == "Short"){
-                if(board?.[options[i]?.[3] + 7].length === 1){
+            } else if (shortOrFar === "ShortNeg" || shortOrFar === "ShortPos"){
+                const posFarSpace = board[options[i][3] + 7].length === 1 && shortOrFar === "ShortPos";
+                const negFarSpace = board[options[i][3] - 7].length === 1 && shortOrFar === "ShortNeg";
+                if(posFarSpace || negFarSpace){
                     // Push our "jump option" into our options...
-                    const square = board[options[i][3] + 7];
+                    const square = board[options[i][3] + (posFarSpace ? 7 : -7)];
                     const jumpOption = {}
                     // Turning the square index number into a key and having it equal...
-                    jumpOption[options[i][3] + 7] = {"jump": square, "enemy": options[i]}
+                    jumpOption[options[i][3] + (posFarSpace ? 7 : -7)] = {"jump": square, "enemy": options[i]}
                     options.push(jumpOption);
                 }
             }
@@ -282,11 +291,9 @@ function userMove(e){
     // Move player piece - using selected piece info
     if(jumpOption || moveOption){
         const filteredMove = jumpOption || moveOption;
-        const [space, userPiece] = board[selectedPiece.indexOfBoardPiece];
-        const clone = userPiece.cloneNode();
-        space.removeChild(space.childNodes[0]);
+        const [, userPiece] = board[selectedPiece.indexOfBoardPiece];
         filteredMove.classList.remove("moveOption");
-        filteredMove.appendChild(clone);
+        filteredMove.appendChild(userPiece);
         // Remove event listener after use
         (selectedPiece.moveOptions, "<-- move options")
     }
