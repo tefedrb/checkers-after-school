@@ -63,7 +63,7 @@ function getPlayerPieces() {
         playerPieces = blackPieces
     }
     removeCellOnClick()
-    resetOpacity()
+    setOpacity()
 }
 function removeCellOnClick() {
     for (let i = 0; i < cells.length; i++) {
@@ -71,13 +71,18 @@ function removeCellOnClick() {
         
     }
 }
-function resetOpacity() {
+function setOpacity(off = false) {
+    if(!off) getSelectedPiece()
     for (let i = 0; i < playerPieces.length; i++) {
-        playerPieces[i].style.opacity = .2;
-        
+        if(playerPieces[selectedPiece?.pieceId] === playerPieces[i] && !off){
+            playerPieces[i].style.opacity = 1;
+        } else if(!off){
+            playerPieces[i].style.opacity = .2;
+        } else if(off){
+            playerPieces[i].style.opacity = 1;
+        }
     }
-    resetSelectedPieceProps()
-    getSelectedPiece()
+    // resetSelectedPieceProps()
 }
 function resetSelectedPieceProps() {
     selectedPiece.pieceId = -1;
@@ -96,7 +101,6 @@ function resetSelectedPieceProps() {
 function getSelectedPiece() {
     selectedPiece.pieceId = parseInt(event.target.id)
     selectedPiece.indexOfBoardPiece = findPiece(selectedPiece.pieceId)
-    playerPieces[selectedPiece.pieceId].style.opacity = 1
     isPieceKing()
 }
 function findPiece(pieceId) {
@@ -234,12 +238,10 @@ function getDouble(options) {
     // Consolidate information into one object 
     const newOptions = optionsToObj(options);
     selectedPiece.moveOptions = newOptions;
-    awaitPlayerMove(selectedPiece.moveOptions)
+    awaitPlayerMove(selectedPiece.moveOptions);
     lightUpOptions(newOptions, true);
     return newOptions;
 }
-
-
 
 function optionsToObj(options){
     // I need to check if there are arrays -> if so these should be move options
@@ -288,6 +290,7 @@ function userMove(e){
     // Data looks like -> {39: {enemy: [td, p#14.blackPiece, "Far", 30], jump: [td.moveOption]}} ?
     let enemy = null;
     let moveOption = null;
+    // Here we have access to all of the move options of the current piece
     const data = selectedPiece.moveOptions;
     for(let key in data){
         if(data[key].jump || data[key].move){
@@ -310,7 +313,16 @@ function userMove(e){
         space.removeChild(space.childNodes[0]);
         moveOption.classList.remove("moveOption");
         moveOption.appendChild(clone);
-       // Remove event listener after use
-        this.removeEventListener("click", userMove);
+        // Remove event listener after use
+        console.log(selectedPiece.moveOptions, "<-- move options")
+        function removeListeners(){
+            for(let option in data){
+                board[option][0].removeEventListener("click", userMove);
+            }
+        }
+        lightUpOptions(board, false);
+        removeListeners();
+        setOpacity(true);
     }
+    resetSelectedPieceProps()
 }
