@@ -41,14 +41,18 @@ let selectedPiece = {
 
 const giveListeners = () => {
     if (turn) {
+        for(let i = 0; i < blackPieces.length; i++){
+            blackPieces[i].removeEventListener("click", getPlayerPieces);
+        }
         for (let i = 0; i < redPieces.length; i++) {
             redPieces[i].addEventListener("click", getPlayerPieces)
         }
     } else {
+        for(let i = 0; i < redPieces.length; i++){
+            redPieces[i].removeEventListener("click", getPlayerPieces);
+        }
         for (let i = 0; i < blackPieces.length; i++) {
-            blackPieces[i].addEventListener("click", () => {
-                console.log("click")
-            })    
+            blackPieces[i].addEventListener("click", getPlayerPieces)    
         }
     }
 }
@@ -67,14 +71,13 @@ function getPlayerPieces() {
 }
 function removeCellOnClick() {
     for (let i = 0; i < cells.length; i++) {
-        cells[i].removeAttribute("onclick")
-        
+        cells[i].removeAttribute("onclick")  
     }
 }
 function setOpacity(off = false) {
     if(!off) getSelectedPiece()
     for (let i = 0; i < playerPieces.length; i++) {
-        if(playerPieces[selectedPiece?.pieceId] === playerPieces[i] && !off){
+        if([...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0] === playerPieces[i] && !off){
             playerPieces[i].style.opacity = 1;
         } else if(!off){
             playerPieces[i].style.opacity = .2;
@@ -315,14 +318,20 @@ function userMove(e){
         moveOption.appendChild(clone);
         // Remove event listener after use
         console.log(selectedPiece.moveOptions, "<-- move options")
-        function removeListeners(){
-            for(let option in data){
-                board[option][0].removeEventListener("click", userMove);
-            }
-        }
-        lightUpOptions(board, false);
-        removeListeners();
-        setOpacity(true);
     }
-    resetSelectedPieceProps()
+    function removeListeners(){
+        for(let option in data){
+            board[option][0].removeEventListener("click", userMove);
+        }
+    }
+    removeListeners();
+    endTurn();
+}
+
+function endTurn(){
+    lightUpOptions(board, false);
+    setOpacity(true);
+    resetSelectedPieceProps();
+    turn = false;
+    giveListeners();
 }
