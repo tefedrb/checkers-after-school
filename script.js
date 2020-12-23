@@ -41,6 +41,7 @@ let selectedPiece = {
 
 const giveListeners = () => {
     if (turn) {
+        // console.log(blackPieces, "here")
         for(let i = 0; i < blackPieces.length; i++){
             blackPieces[i].removeEventListener("click", getPlayerPieces);
         }
@@ -103,12 +104,8 @@ function resetSelectedPieceProps() {
 }
 function getSelectedPiece() {
     selectedPiece.pieceId = parseInt(event.target.id)
-    selectedPiece.indexOfBoardPiece = findPiece(selectedPiece.pieceId)
+    // console.log(selectedPiece.pieceId, "piece id")
     isPieceKing()
-}
-function findPiece(pieceId) {
-    let parsed = parseInt(pieceId)
-    return board.indexOf(parsed)
 }
 function isPieceKing() {
     if (document.getElementById(selectedPiece.pieceId).classList.contains("king")) {
@@ -138,75 +135,44 @@ function getAvailableSpaces() {
         potentialSpaces.push(space)
     }
     // console.log(potentialSpaces, "potential spaces")
+    // console.log(potentialSpaces, "potential spaces")
     getRealAvailableSpaces(potentialSpaces)
 }
 function getRealAvailableSpaces(allSpaces) {
     // True available spaces narrows down the 4 immediate squares surrounding our selected piece
     let trueAvailableSpaces = []
+    // Saving the current state of the board
     board = allSpaces
+    console.log(selectedPiece.indexOfBoardPiece, "huh??")
     const pieceIndex = selectedPiece.indexOfBoardPiece;
-    // I decided to use the spread operator to create a new array and therfore a new reference to the DOM nodes
-    if (pieceIndex < 9) {
-        if (allSpaces[pieceIndex + 9] && !allSpaces[pieceIndex + 9][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], pieceIndex + 9])
-        }
-        if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex + 7], pieceIndex + 7])
-        } 
-    } else if (pieceIndex == 9) {
-        if (allSpaces[pieceIndex + 9] && !allSpaces[pieceIndex + 9][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], pieceIndex + 9])
-        }
-        if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex + 7], pieceIndex + 7])
-        }
-        if (allSpaces[pieceIndex - 7] && !allSpaces[pieceIndex - 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex - 7], pieceIndex - 7])
-        }
-    } else if (pieceIndex > 55) {
-        if (allSpaces[pieceIndex - 7] && !allSpaces[pieceIndex - 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex - 7], pieceIndex - 7])
-        }
-        if (allSpaces[pieceIndex - 9] && !allSpaces[pieceIndex - 9][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex - 9], pieceIndex - 9])
-        }
-    } else if (pieceIndex == 55) {
-        if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex + 7], pieceIndex + 7])
-        }
-        if (allSpaces[pieceIndex - 7] && !allSpaces[pieceIndex - 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex - 7], pieceIndex - 7])
-        }
-        if (allSpaces[pieceIndex - 9] && !allSpaces[pieceIndex - 9][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex - 9], pieceIndex - 9])
-        }
-    } else {
-        // Short is a 7 square check & Far is a 9 square check
-        if (allSpaces[pieceIndex + 9] && !allSpaces[pieceIndex + 9][0].classList.contains("noPieceHere")) {
-            // Push a "Far" string and that piece index into space
-            trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], "Far", pieceIndex + 9]);
-        }
-        if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex + 7], "Short", pieceIndex + 7]);
-        }
-        if (allSpaces[pieceIndex - 7] && !allSpaces[pieceIndex - 7][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex - 7], "Short", pieceIndex - 7]);
-        }
-        if (allSpaces[pieceIndex - 9] && !allSpaces[pieceIndex - 9][0].classList.contains("noPieceHere")) {
-            trueAvailableSpaces.push([...allSpaces[pieceIndex - 9], "Far", pieceIndex - 9]);
-        }
+    // I decided to use the spread operator to create a new array and therefore a new reference to the DOM nodes
+    if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList?.contains("noPieceHere")) {
+        trueAvailableSpaces.push([...allSpaces[pieceIndex + 7], "Short", pieceIndex + 7])
     }
+    if (allSpaces[pieceIndex - 7] && !allSpaces[pieceIndex - 7][0].classList?.contains("noPieceHere")) {
+        trueAvailableSpaces.push([...allSpaces[pieceIndex - 7], "Short", pieceIndex - 7])
+    }
+    if (allSpaces[pieceIndex - 9] && !allSpaces[pieceIndex - 9][0].classList?.contains("noPieceHere")) {
+        trueAvailableSpaces.push([...allSpaces[pieceIndex - 9], "Far", pieceIndex - 9])
+    }
+    // Short is a 7 square check & Far is a 9 square check
+    if (allSpaces[pieceIndex + 9] && !allSpaces[pieceIndex + 9][0].classList?.contains("noPieceHere")) {
+        // Push a "Far" string and that piece index into space
+        trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], "Far", pieceIndex + 9]);
+    }
+    console.log(trueAvailableSpaces, "true")
     getDouble(trueAvailableSpaces)
 }
 function getDouble(options) {
     lightUpOptions(board, false);
+    // console.log(options, "options")
     const opposition = turn ? "blackPiece" : "redPiece";
     const myPieces = turn ? "redPiece" : "blackPiece";
     for (let i = 0; i < options.length; i++) {
             // 1. we are iterating here to check whether our current option (within options) is a black piece... if it is
             // 2. we want to check and see if we can jump over it
             // 3. the point here is we are trying to remove or add options to our "options" array
-        if (options[i] && options?.[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList.contains(opposition)) {
+        if (options[i] && options?.[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList?.contains(opposition)) {
             // Here the idea was to check whether the black piece was in a far position - if was we want to check 9 spaces ahead
             // in order to see if that square was an option - this is essentially gives us a "jump option".
             if (options[i][2] == "Far") {
@@ -232,7 +198,7 @@ function getDouble(options) {
             // Get rid of the black piece that we our evaluating... might want to store this as an option to remove if the player chooses to take it
             options.splice(i,1);
         }
-        if (options[i] && options[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList.contains(myPieces)) {
+        if (options[i] && options[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList?.contains(myPieces)) {
             // Here we are removing our pieces from our options
             options.splice(i,1);
             i--;
@@ -293,45 +259,51 @@ function userMove(e){
     // Data looks like -> {39: {enemy: [td, p#14.blackPiece, "Far", 30], jump: [td.moveOption]}} ?
     let enemy = null;
     let moveOption = null;
+    let jumpOption = null;
     // Here we have access to all of the move options of the current piece
     const data = selectedPiece.moveOptions;
     for(let key in data){
         if(data[key].jump || data[key].move){
-            const jumpOrMove = data[key].jump?.[0] || data[key].move?.[0];
-            jumpOrMove === e.target ? moveOption = jumpOrMove : null;
+            const jump = data[key]?.jump?.[0];
+            const move = data[key]?.move?.[0];
+            // console.log(data[key], "keys")
+            // Checks if the move option is either a jump move or a regular move
+            jump === e.target ? jumpOption = jump : move === e.target ? moveOption = move : null;
         }
         if(data[key].enemy){
             enemy = data[key].enemy[0];
         }
     }
     // If enemy, remove enemy piece from board
-    if(enemy && moveOption){
+    if(enemy && jumpOption){
         // Removes opponents piece from space -> user takes
         enemy.removeChild(enemy.childNodes[0]);
     }
-    // Move player piece - use selected piece
-    if(enemy || moveOption){
+    // Move player piece - using selected piece info
+    if(jumpOption || moveOption){
+        const filteredMove = jumpOption || moveOption;
         const [space, userPiece] = board[selectedPiece.indexOfBoardPiece];
         const clone = userPiece.cloneNode();
         space.removeChild(space.childNodes[0]);
-        moveOption.classList.remove("moveOption");
-        moveOption.appendChild(clone);
+        filteredMove.classList.remove("moveOption");
+        filteredMove.appendChild(clone);
         // Remove event listener after use
-        console.log(selectedPiece.moveOptions, "<-- move options")
+        (selectedPiece.moveOptions, "<-- move options")
     }
+    endTurn();
+}
+
+function endTurn(){
+    const data = selectedPiece.moveOptions;
     function removeListeners(){
         for(let option in data){
             board[option][0].removeEventListener("click", userMove);
         }
     }
     removeListeners();
-    endTurn();
-}
-
-function endTurn(){
     lightUpOptions(board, false);
     setOpacity(true);
     resetSelectedPieceProps();
-    turn = false;
+    turn = !turn;
     giveListeners();
 }
