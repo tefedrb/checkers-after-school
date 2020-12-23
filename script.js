@@ -15,6 +15,9 @@ const cells = document.querySelectorAll("td")
 let redPieces = document.querySelectorAll(".redPiece")
 let blackPieces = document.querySelectorAll(".blackPiece")
 const divider = document.getElementById("divider")
+const redTurn = document.querySelector(".redTurn");
+const blackTurn = document.querySelector(".blackTurn");
+
 
 let redScore = 12
 let blackScore = 12
@@ -36,8 +39,6 @@ let selectedPiece = {
     opacity: 1, 
     moveOptions: null
 }
-
-
 
 const giveListeners = () => {
     if (turn) {
@@ -73,11 +74,13 @@ function getPlayerPieces() {
     removeCellOnClick()
     setOpacity()
 }
+
 function removeCellOnClick() {
     for (let i = 0; i < cells.length; i++) {
         cells[i].removeAttribute("onclick")  
     }
 }
+
 function setOpacity(off = false) {
     if(!off) getSelectedPiece()
     for (let i = 0; i < playerPieces.length; i++) {
@@ -89,8 +92,8 @@ function setOpacity(off = false) {
             playerPieces[i].style.opacity = 1;
         }
     }
-    // resetSelectedPieceProps()
 }
+
 function resetSelectedPieceProps() {
     selectedPiece.pieceId = -1;
     selectedPiece.indexOfBoardPiece = -1;
@@ -105,19 +108,22 @@ function resetSelectedPieceProps() {
     selectedPiece.minusEighteenthSpace = false;
     selectedPiece.opacity = 1;
 }
+
 function getSelectedPiece() {
     selectedPiece.pieceId = parseInt(event.target.id)
-    // console.log(selectedPiece.pieceId, "piece id")
-    isPieceKing()
+    isPieceKing();
 }
+
 function isPieceKing() {
     if (document.getElementById(selectedPiece.pieceId).classList.contains("king")) {
         selectedPiece.isKing = true
     } else {
         selectedPiece.isKing = false
+        console.log("not king")
     }
     getAvailableSpaces()
 }
+
 function getAvailableSpaces() {
     let potentialSpaces = []
     for (let i = 0; i < cells.length; i++) {
@@ -141,6 +147,7 @@ function getAvailableSpaces() {
     // console.log(potentialSpaces, "potential spaces")
     getRealAvailableSpaces(potentialSpaces)
 }
+
 function getRealAvailableSpaces(allSpaces) {
     // True available spaces narrows down the 4 immediate squares surrounding our selected piece
     let trueAvailableSpaces = []
@@ -162,9 +169,12 @@ function getRealAvailableSpaces(allSpaces) {
         // Push a "Far" string and that piece index into space
         trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], "FarPos", pieceIndex + 9]);
     }
-    // console.log(trueAvailableSpaces, "true")
+    console.log(trueAvailableSpaces, "true")
+    // Filter non-kings here
+
+    console.log(filterOptionsIfNotKing(trueAvailableSpaces), "filtered");
     // if(turn){
-    getDouble(trueAvailableSpaces)
+    getDouble(filterOptionsIfNotKing(trueAvailableSpaces));
     // }
 }
 function getDouble(options) {
@@ -240,6 +250,23 @@ function optionsToObj(options){
     return arraysToObj;
 }
 
+function filterOptionsIfNotKing(options){
+    if(!selectedPiece.isKing){
+        // Check for redpieces or blackpieces -> determines direction on board
+        const farPiece = turn ? "FarNeg" : "FarPos";
+        const shortPiece = turn ? "ShortNeg" : "ShortPos";
+        return options.filter(cur => !(cur.includes(shortPiece) || cur.includes(farPiece)));
+    }
+    return options
+}
+
+function awaitPlayerMove(options){
+    // add event listeners to pieces
+    Object.keys(options).forEach(key => {
+        board[key][0].addEventListener("click", userMove);
+    })
+}
+
 function lightUpOptions(options, addOrRemove){
     if(addOrRemove && !Array.isArray(options)){
         for(let moveOption in options){
@@ -253,13 +280,6 @@ function lightUpOptions(options, addOrRemove){
     } else if(!addOrRemove && Array.isArray(options)){
         options.forEach(cur => cur[0].classList.remove("moveOption"));
     }
-}
-
-function awaitPlayerMove(options){
-    // add event listeners to pieces
-    Object.keys(options).forEach(key => {
-        board[key][0].addEventListener("click", userMove);
-    })
 }
 
 function userMove(e){
@@ -295,22 +315,44 @@ function userMove(e){
         filteredMove.classList.remove("moveOption");
         filteredMove.appendChild(userPiece);
         // Remove event listener after use
-        (selectedPiece.moveOptions, "<-- move options")
     }
     endTurn();
 }
 
 function endTurn(){
     const data = selectedPiece.moveOptions;
-    function removeListeners(){
-        for(let option in data){
-            board[option][0].removeEventListener("click", userMove);
-        }
-    }
-    removeListeners();
+    removeMoveListeners(data);
     lightUpOptions(board, false);
     setOpacity(true);
     resetSelectedPieceProps();
     turn = !turn;
+    redPieces = document.querySelectorAll(".redPiece");
+    blackPieces = document.querySelectorAll(".blackPiece");
+    checkForWin();
+    switchTurnsCSS(turn);
     giveListeners();
+}
+
+function checkForWin(){
+    if(redPieces.length === 0){
+        console.log("Black Wins!")
+    } else if (blackPieces.length === 0){
+        console.log("Red Wins!")
+    }
+}
+
+function switchTurnsCSS(turn){
+    if(turn){
+        redTurn.classList.remove("notTurn");
+        blackTurn.classList.add("notTurn");
+    } else {
+        blackTurn.classList.remove("notTurn");
+        redTurn.classList.add("notTurn");
+    }
+}
+
+function removeMoveListeners(data){
+    for(let option in data){
+        board[option][0].removeEventListener("click", userMove);
+    }
 }
