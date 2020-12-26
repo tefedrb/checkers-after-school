@@ -9,7 +9,7 @@ const blackTurn = document.querySelector(".blackTurn");
 
 let redScore = 12
 let blackScore = 12
-let turn = false
+let turn = true;
 let playerPieces
 
 let selectedPiece = {
@@ -26,31 +26,31 @@ const giveListeners = () => {
     const jumped = selectedPiece.inJumpSequence;
     if(jumped){
         // board.forEach(cur => cur.removeEventListener("click", getPlayerPieces))
-        [...blackPieces, ...redPieces].forEach(cur => cur.removeEventListener("click", beginChainedFunction));
-        return isPieceKing();
+        [...blackPieces, ...redPieces].forEach(cur => cur.removeEventListener("click", beginChainedFunctions));
+        return getPlayerPieces();
     }
     if (turn) {
         for(let i = 0; i < (jumped ? 0 : blackPieces.length); i++){
-            blackPieces[i].removeEventListener("click", beginChainedFunction);
+            blackPieces[i].removeEventListener("click", beginChainedFunctions);
         }
         for (let i = 0; i < redPieces.length; i++) {
-            redPieces[i].addEventListener("click", beginChainedFunction)
+            redPieces[i].addEventListener("click", beginChainedFunctions);
         }
     } else {
         for(let i = 0; i < (jumped ? 0 : redPieces.length); i++){
-            redPieces[i].removeEventListener("click", beginChainedFunction);
+            redPieces[i].removeEventListener("click", beginChainedFunctions);
         }
         for (let i = 0; i < blackPieces.length; i++) {
-            blackPieces[i].addEventListener("click", beginChainedFunction)    
+            blackPieces[i].addEventListener("click", beginChainedFunctions);
         }
     }
 }
-giveListeners()
+giveListeners();
 // Is there hoisting in ES6 syntax? If so, how do you write a function in ES6 that allows
 // for hoisting? And if not, why is there no hoisting? Step down rule
 
-function beginChainedFunction(){
-    getPlayerPieces()
+function beginChainedFunctions(){
+    getPlayerPieces();
 }
 
 function getPlayerPieces() {
@@ -65,8 +65,9 @@ function getPlayerPieces() {
 function setOpacity(off = false) {
     // getSelectedPiece is a key link in the chain
     if(!off) getSelectedPiece();
+    const playerPiece = [...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0] 
     for (let i = 0; i < playerPieces.length; i++) {
-        if([...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0] === playerPieces[i] && !off){
+        if(playerPiece === playerPieces[i] && !off){
             playerPieces[i].style.opacity = 1;
         } else if(!off){
             playerPieces[i].style.opacity = .2;
@@ -86,7 +87,7 @@ function resetSelectedPieceProps() {
 }
 
 function getSelectedPiece() {
-    selectedPiece.pieceId = parseInt(event.target.id)
+    selectedPiece.inJumpSequence ? null : selectedPiece.pieceId = parseInt(event.target.id)
     isPieceKing();
 }
 
@@ -105,9 +106,9 @@ function getBoardData() {
     for (let i = 0; i < cells.length; i++) {
       index = boardData.length
       const space = []
-        if (cells[i].classList.contains("noPieceHere") == false) {
-            const piece = cells[i].querySelector("p")
-            space.push(cells[i])
+        if (cells[i].classList.contains("noPieceHere") === false) {
+            const piece = cells[i].querySelector("p");
+            space.push(cells[i]);
             if (piece) {
                 space.push(piece)
                 if (selectedPiece.pieceId == piece.id ) {
@@ -116,13 +117,13 @@ function getBoardData() {
                 }
             }
         } else {
-            space.push(cells[i])
+            space.push(cells[i]);
         }
-        boardData.push(space)
+        boardData.push(space);
     }
     // Saving the current state of the board in our global - remember, these are all references
     board = boardData;
-    getAvailableSpaces(boardData)
+    getAvailableSpaces(board);
 }
 
 function getAvailableSpaces(allSpaces) {
@@ -164,8 +165,8 @@ function getDouble(options) {
             const shortOrFar = options[i][2];
             if (shortOrFar === "FarNeg" || shortOrFar === "FarPos") {
                 // If the length here is 1 then we know the square is empty and ready to be occupied
-                const posFarSpace = board?.[options[i]?.[3] + 9].length === 1 && shortOrFar === "FarPos" && !board[options[i][3] + 9][0].classList.contains("noPieceHere");
-                const negFarSpace = board?.[options[i]?.[3] - 9].length === 1 && shortOrFar === "FarNeg" && !board[options[i][3] - 9][0].classList.contains("noPieceHere");
+                const posFarSpace = board?.[options[i]?.[3] + 9]?.length === 1 && shortOrFar === "FarPos" && !board[options[i][3] + 9][0].classList.contains("noPieceHere");
+                const negFarSpace = board?.[options[i]?.[3] - 9]?.length === 1 && shortOrFar === "FarNeg" && !board[options[i][3] - 9][0].classList.contains("noPieceHere");
                 if (posFarSpace || negFarSpace) {
                     // Push our "jump option" into our options...
                     const square = board[options[i][3] + (posFarSpace ? 9 : -9)];
@@ -175,8 +176,8 @@ function getDouble(options) {
                     options.push(jumpOption);
                 }
             } else if (shortOrFar === "ShortNeg" || shortOrFar === "ShortPos"){
-                const posFarSpace = board[options[i][3] + 7].length === 1 && shortOrFar === "ShortPos" && !board[options[i][3] + 7][0].classList.contains("noPieceHere");
-                const negFarSpace = board[options[i][3] - 7].length === 1 && shortOrFar === "ShortNeg" && !board[options[i][3] - 7][0].classList.contains("noPieceHere");
+                const posFarSpace = board?.[options[i][3] + 7]?.length === 1 && shortOrFar === "ShortPos" && !board[options[i][3] + 7][0].classList.contains("noPieceHere");
+                const negFarSpace = board?.[options[i][3] - 7]?.length === 1 && shortOrFar === "ShortNeg" && !board[options[i][3] - 7][0].classList.contains("noPieceHere");
                 if(posFarSpace || negFarSpace){
                     // Push our "jump option" into our options...
                     const square = board[options[i][3] + (posFarSpace ? 7 : -7)];
@@ -199,10 +200,31 @@ function getDouble(options) {
     // Consolidate information into one object 
     const newOptions = optionsToObj(options);
     selectedPiece.moveOptions = newOptions;
-    awaitPlayerMove(selectedPiece.moveOptions);
-    lightUpOptions(newOptions, true);
-    console.log(newOptions, "new")
+
+    if(selectedPiece.inJumpSequence){
+        const jumpSequenceOptions = stripAllButJumpMoves(newOptions);
+        selectedPiece.moveOptions = jumpSequenceOptions;
+        console.log(jumpSequenceOptions, "options")
+        if(Object.keys(jumpSequenceOptions).length === 0){
+            return endTurn();
+        }
+        awaitPlayerMove(jumpSequenceOptions);
+        lightUpOptions(jumpSequenceOptions, true);
+    } else {
+        awaitPlayerMove(newOptions);
+        lightUpOptions(newOptions, true);
+    }
     return newOptions;
+}
+
+function stripAllButJumpMoves(options){
+    const strippedObj = {};
+    for(let option in options){
+        if(options[option].jump){
+            strippedObj[option] = options[option];
+        }
+    }
+    return strippedObj;
 }
 
 function optionsToObj(options){
