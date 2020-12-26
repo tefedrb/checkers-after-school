@@ -1,15 +1,4 @@
-let board = []
-
-// const board = [
-//     null, 0, null, 1, null, 2, null, 3, 
-//     4, null, 5, null, 6, null, 7, null,
-//     null, 8, null, 9, null, 10, null, 11,
-//     true, null, true, null, true, null, true, null,
-//     null, true, null, true, null, true, null, true,
-//     12, null, 13, null, 14, null, 15, null,
-//     null, 16, null, 17, null, 18, null, 19,
-//     20, null, 21, null, 22, null, 23, null,
-// ]
+let board = [];
 
 const cells = document.querySelectorAll("td")
 let redPieces = document.querySelectorAll(".redPiece")
@@ -18,71 +7,64 @@ const divider = document.getElementById("divider")
 const redTurn = document.querySelector(".redTurn");
 const blackTurn = document.querySelector(".blackTurn");
 
-
 let redScore = 12
 let blackScore = 12
-let turn = true
+let turn = false
 let playerPieces
 
 let selectedPiece = {
     pieceId: -1,
     indexOfBoardPiece: -1,
     isKing: false,
-    seventhSpace: false,
-    ninthSpace: false,
-    fourteenthSpace: false,
-    eighteenthSpace: false,
-    minusSeventhSpace: false,
-    minusNinthSpace: false,
-    minusFourteenthSpace: false,
-    minusEighteenthSpace: false,
     opacity: 1, 
-    moveOptions: null
+    moveOptions: null,
+    inJumpSequence: false
 }
 
+// A JUMPED MOVE STARTS HERE AND DEVIATES FROM ORIGINAL LINE OF LOGIC
 const giveListeners = () => {
+    const jumped = selectedPiece.inJumpSequence;
+    if(jumped){
+        // board.forEach(cur => cur.removeEventListener("click", getPlayerPieces))
+        [...blackPieces, ...redPieces].forEach(cur => cur.removeEventListener("click", beginChainedFunction));
+        return isPieceKing();
+    }
     if (turn) {
-        // console.log(blackPieces, "here")
-        for(let i = 0; i < blackPieces.length; i++){
-            console.log(blackPieces.length, "blackpieces removed")
-            blackPieces[i].removeEventListener("click", getPlayerPieces);
+        for(let i = 0; i < (jumped ? 0 : blackPieces.length); i++){
+            blackPieces[i].removeEventListener("click", beginChainedFunction);
         }
         for (let i = 0; i < redPieces.length; i++) {
-            redPieces[i].addEventListener("click", getPlayerPieces)
+            redPieces[i].addEventListener("click", beginChainedFunction)
         }
     } else {
-        for(let i = 0; i < redPieces.length; i++){
-            console.log(redPieces.length, "redPieces removed")
-
-            redPieces[i].removeEventListener("click", getPlayerPieces);
+        for(let i = 0; i < (jumped ? 0 : redPieces.length); i++){
+            redPieces[i].removeEventListener("click", beginChainedFunction);
         }
         for (let i = 0; i < blackPieces.length; i++) {
-            blackPieces[i].addEventListener("click", getPlayerPieces)    
+            blackPieces[i].addEventListener("click", beginChainedFunction)    
         }
     }
 }
 giveListeners()
 // Is there hoisting in ES6 syntax? If so, how do you write a function in ES6 that allows
 // for hoisting? And if not, why is there no hoisting? Step down rule
+
+function beginChainedFunction(){
+    getPlayerPieces()
+}
+
 function getPlayerPieces() {
     if (turn) {
         playerPieces = redPieces
-
     } else {
         playerPieces = blackPieces
     }
-    removeCellOnClick()
     setOpacity()
 }
 
-function removeCellOnClick() {
-    for (let i = 0; i < cells.length; i++) {
-        cells[i].removeAttribute("onclick")  
-    }
-}
-
 function setOpacity(off = false) {
-    if(!off) getSelectedPiece()
+    // getSelectedPiece is a key link in the chain
+    if(!off) getSelectedPiece();
     for (let i = 0; i < playerPieces.length; i++) {
         if([...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0] === playerPieces[i] && !off){
             playerPieces[i].style.opacity = 1;
@@ -98,15 +80,9 @@ function resetSelectedPieceProps() {
     selectedPiece.pieceId = -1;
     selectedPiece.indexOfBoardPiece = -1;
     selectedPiece.isKing = false;
-    selectedPiece.seventhSpace = false;
-    selectedPiece.ninthSpace = false;
-    selectedPiece.fourteenthSpace = false;
-    selectedPiece.eighteenthSpace = false;
-    selectedPiece.minusSeventhSpace = false;
-    selectedPiece.minusNinthSpace = false;
-    selectedPiece.minusFourteenthSpace = false;
-    selectedPiece.minusEighteenthSpace = false;
     selectedPiece.opacity = 1;
+    selectedPiece.moveOptions = null;
+    selectedPiece.inJumpSequence = false;
 }
 
 function getSelectedPiece() {
@@ -115,19 +91,19 @@ function getSelectedPiece() {
 }
 
 function isPieceKing() {
+    // Call isPieceKing() first when jumping piece
     if (document.getElementById(selectedPiece.pieceId).classList.contains("king")) {
         selectedPiece.isKing = true
     } else {
         selectedPiece.isKing = false
-        console.log("not king")
     }
-    getAvailableSpaces()
+    getBoardData();
 }
 
-function getAvailableSpaces() {
-    let potentialSpaces = []
+function getBoardData() {
+    let boardData = []
     for (let i = 0; i < cells.length; i++) {
-      index = potentialSpaces.length
+      index = boardData.length
       const space = []
         if (cells[i].classList.contains("noPieceHere") == false) {
             const piece = cells[i].querySelector("p")
@@ -135,24 +111,24 @@ function getAvailableSpaces() {
             if (piece) {
                 space.push(piece)
                 if (selectedPiece.pieceId == piece.id ) {
+                    // Here we are setting our selectedPieces index on the board
                     selectedPiece.indexOfBoardPiece = i;
                 }
             }
         } else {
             space.push(cells[i])
         }
-        potentialSpaces.push(space)
+        boardData.push(space)
     }
-    // console.log(potentialSpaces, "potential spaces")
-    // console.log(potentialSpaces, "potential spaces")
-    getRealAvailableSpaces(potentialSpaces)
+    // Saving the current state of the board in our global - remember, these are all references
+    board = boardData;
+    getAvailableSpaces(boardData)
 }
 
-function getRealAvailableSpaces(allSpaces) {
+function getAvailableSpaces(allSpaces) {
     // True available spaces narrows down the 4 immediate squares surrounding our selected piece
     let trueAvailableSpaces = []
-    // Saving the current state of the board
-    board = allSpaces
+
     const pieceIndex = selectedPiece.indexOfBoardPiece;
     // I decided to use the spread operator to create a new array and therefore a new reference to the DOM nodes
     if (allSpaces[pieceIndex + 7] && !allSpaces[pieceIndex + 7][0].classList?.contains("noPieceHere")) {
@@ -169,17 +145,13 @@ function getRealAvailableSpaces(allSpaces) {
         // Push a "Far" string and that piece index into space
         trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], "FarPos", pieceIndex + 9]);
     }
-    console.log(trueAvailableSpaces, "true")
     // Filter non-kings here
-
-    console.log(filterOptionsIfNotKing(trueAvailableSpaces), "filtered");
-    // if(turn){
+    // console.log(trueAvailableSpaces, "true")
     getDouble(filterOptionsIfNotKing(trueAvailableSpaces));
-    // }
 }
+
 function getDouble(options) {
     lightUpOptions(board, false);
-    // console.log(options, "options")
     const opposition = turn ? "blackPiece" : "redPiece";
     const myPieces = turn ? "redPiece" : "blackPiece";
     for (let i = 0; i < options.length; i++) {
@@ -192,8 +164,8 @@ function getDouble(options) {
             const shortOrFar = options[i][2];
             if (shortOrFar === "FarNeg" || shortOrFar === "FarPos") {
                 // If the length here is 1 then we know the square is empty and ready to be occupied
-                const posFarSpace = board?.[options[i]?.[3] + 9].length === 1 && shortOrFar === "FarPos";
-                const negFarSpace = board?.[options[i]?.[3] - 9].length === 1 && shortOrFar === "FarNeg";
+                const posFarSpace = board?.[options[i]?.[3] + 9].length === 1 && shortOrFar === "FarPos" && !board[options[i][3] + 9][0].classList.contains("noPieceHere");
+                const negFarSpace = board?.[options[i]?.[3] - 9].length === 1 && shortOrFar === "FarNeg" && !board[options[i][3] - 9][0].classList.contains("noPieceHere");
                 if (posFarSpace || negFarSpace) {
                     // Push our "jump option" into our options...
                     const square = board[options[i][3] + (posFarSpace ? 9 : -9)];
@@ -203,12 +175,12 @@ function getDouble(options) {
                     options.push(jumpOption);
                 }
             } else if (shortOrFar === "ShortNeg" || shortOrFar === "ShortPos"){
-                const posFarSpace = board[options[i][3] + 7].length === 1 && shortOrFar === "ShortPos";
-                const negFarSpace = board[options[i][3] - 7].length === 1 && shortOrFar === "ShortNeg";
+                const posFarSpace = board[options[i][3] + 7].length === 1 && shortOrFar === "ShortPos" && !board[options[i][3] + 7][0].classList.contains("noPieceHere");
+                const negFarSpace = board[options[i][3] - 7].length === 1 && shortOrFar === "ShortNeg" && !board[options[i][3] - 7][0].classList.contains("noPieceHere");
                 if(posFarSpace || negFarSpace){
                     // Push our "jump option" into our options...
                     const square = board[options[i][3] + (posFarSpace ? 7 : -7)];
-                    const jumpOption = {}
+                    const jumpOption = {};
                     // Turning the square index number into a key and having it equal...
                     jumpOption[options[i][3] + (posFarSpace ? 7 : -7)] = {"jump": square, "enemy": options[i]}
                     options.push(jumpOption);
@@ -216,6 +188,7 @@ function getDouble(options) {
             }
             // Get rid of the black piece that we our evaluating... might want to store this as an option to remove if the player chooses to take it
             options.splice(i,1);
+            i--
         }
         if (options[i] && options[i].length > 1 && typeof(options[i][1]) != "string" && options[i][1].classList?.contains(myPieces)) {
             // Here we are removing our pieces from our options
@@ -228,6 +201,7 @@ function getDouble(options) {
     selectedPiece.moveOptions = newOptions;
     awaitPlayerMove(selectedPiece.moveOptions);
     lightUpOptions(newOptions, true);
+    console.log(newOptions, "new")
     return newOptions;
 }
 
@@ -257,7 +231,7 @@ function filterOptionsIfNotKing(options){
         const shortPiece = turn ? "ShortNeg" : "ShortPos";
         return options.filter(cur => !(cur.includes(shortPiece) || cur.includes(farPiece)));
     }
-    return options
+    return options;
 }
 
 function awaitPlayerMove(options){
@@ -295,7 +269,6 @@ function userMove(e){
         if(data[key].jump || data[key].move){
             const jump = data[key]?.jump?.[0];
             const move = data[key]?.move?.[0];
-            // console.log(data[key], "keys")
             // Checks if the move option is either a jump move or a regular move
             jump === e.target ? jumpOption = jump : move === e.target ? moveOption = move : null;
         }
@@ -314,22 +287,27 @@ function userMove(e){
         const [, userPiece] = board[selectedPiece.indexOfBoardPiece];
         filteredMove.classList.remove("moveOption");
         filteredMove.appendChild(userPiece);
-        // Remove event listener after use
+        // If a jump is made we need to allow for the possibility of another turn
     }
-    endTurn();
+    return jumpOption ? endTurn("Jumped") : endTurn();
 }
 
-function endTurn(){
+function endTurn(jumped = false){
     const data = selectedPiece.moveOptions;
     removeMoveListeners(data);
     lightUpOptions(board, false);
     setOpacity(true);
-    resetSelectedPieceProps();
-    turn = !turn;
+    if(!jumped){
+        resetSelectedPieceProps();
+        turn = !turn;
+        selectedPiece.inJumpSequence = false;
+        switchTurnsCSS(turn)
+    } else {
+        selectedPiece.inJumpSequence = true;
+    }
     redPieces = document.querySelectorAll(".redPiece");
     blackPieces = document.querySelectorAll(".blackPiece");
     checkForWin();
-    switchTurnsCSS(turn);
     giveListeners();
 }
 
