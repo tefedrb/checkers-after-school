@@ -10,7 +10,7 @@ const blackTurn = document.querySelector(".blackTurn");
 let redScore = 12
 let blackScore = 12
 let turn = true;
-let playerPieces
+let playerPieces;
 
 let selectedPiece = {
     pieceId: -1,
@@ -21,14 +21,18 @@ let selectedPiece = {
     inJumpSequence: false
 }
 
-// A JUMPED MOVE STARTS HERE AND DEVIATES FROM ORIGINAL LINE OF LOGIC
+// NEED TO SWITCH TO KING IF WE GET TO THE END OF THE BOARD
 const giveListeners = () => {
     const jumped = selectedPiece.inJumpSequence;
     if(jumped){
         // board.forEach(cur => cur.removeEventListener("click", getPlayerPieces))
-        [...blackPieces, ...redPieces].forEach(cur => cur.removeEventListener("click", beginChainedFunctions));
+        const bothPieces = [...blackPieces, ...redPieces];
+        bothPieces.forEach(cur => cur.removeEventListener("click", beginChainedFunctions));
+        console.log("whytho?!?!?!?!?!?!?!?!? ------------")
+        console.log(selectedPiece.inJumpSequence, "ok then")
         return getPlayerPieces();
     }
+    console.log("here now")
     if (turn) {
         for(let i = 0; i < (jumped ? 0 : blackPieces.length); i++){
             blackPieces[i].removeEventListener("click", beginChainedFunctions);
@@ -59,19 +63,22 @@ function getPlayerPieces() {
     } else {
         playerPieces = blackPieces
     }
-    setOpacity()
+    console.log("in Player pieces")
+    getSelectedPiece();
 }
 
 function setOpacity(off = false) {
     // getSelectedPiece is a key link in the chain
-    if(!off) getSelectedPiece();
+    console.log("in opacity")
     const playerPiece = [...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0] 
-    for (let i = 0; i < playerPieces.length; i++) {
+    console.log(playerPiece, "Player", off)
+    for (let i = 0; i < playerPieces.length; i++){
         if(playerPiece === playerPieces[i] && !off){
             playerPieces[i].style.opacity = 1;
         } else if(!off){
             playerPieces[i].style.opacity = .2;
         } else if(off){
+            console.log("show all player pieces")
             playerPieces[i].style.opacity = 1;
         }
     }
@@ -87,7 +94,7 @@ function resetSelectedPieceProps() {
 }
 
 function getSelectedPiece() {
-    selectedPiece.inJumpSequence ? null : selectedPiece.pieceId = parseInt(event.target.id)
+    selectedPiece.inJumpSequence ? null : selectedPiece.pieceId = parseInt(event.target.id);
     isPieceKing();
 }
 
@@ -102,10 +109,10 @@ function isPieceKing() {
 }
 
 function getBoardData() {
-    let boardData = []
+    let boardData = [];
     for (let i = 0; i < cells.length; i++) {
       index = boardData.length
-      const space = []
+      const space = [];
         if (cells[i].classList.contains("noPieceHere") === false) {
             const piece = cells[i].querySelector("p");
             space.push(cells[i]);
@@ -123,6 +130,7 @@ function getBoardData() {
     }
     // Saving the current state of the board in our global - remember, these are all references
     board = boardData;
+    // console.log(board, "board!")
     getAvailableSpaces(board);
 }
 
@@ -151,7 +159,18 @@ function getAvailableSpaces(allSpaces) {
     getDouble(filterOptionsIfNotKing(trueAvailableSpaces));
 }
 
+function filterOptionsIfNotKing(options){
+    if(!selectedPiece.isKing){
+        // Check for redpieces or blackpieces -> determines direction on board
+        const farPiece = turn ? "FarNeg" : "FarPos";
+        const shortPiece = turn ? "ShortNeg" : "ShortPos";
+        return options.filter(cur => !(cur.includes(shortPiece) || cur.includes(farPiece)));
+    }
+    return options;
+}
+
 function getDouble(options) {
+    setOpacity();
     lightUpOptions(board, false);
     const opposition = turn ? "blackPiece" : "redPiece";
     const myPieces = turn ? "redPiece" : "blackPiece";
@@ -200,11 +219,9 @@ function getDouble(options) {
     // Consolidate information into one object 
     const newOptions = optionsToObj(options);
     selectedPiece.moveOptions = newOptions;
-
     if(selectedPiece.inJumpSequence){
         const jumpSequenceOptions = stripAllButJumpMoves(newOptions);
         selectedPiece.moveOptions = jumpSequenceOptions;
-        console.log(jumpSequenceOptions, "options")
         if(Object.keys(jumpSequenceOptions).length === 0){
             return endTurn();
         }
@@ -244,16 +261,6 @@ function optionsToObj(options){
         return acc;
     },{});
     return arraysToObj;
-}
-
-function filterOptionsIfNotKing(options){
-    if(!selectedPiece.isKing){
-        // Check for redpieces or blackpieces -> determines direction on board
-        const farPiece = turn ? "FarNeg" : "FarPos";
-        const shortPiece = turn ? "ShortNeg" : "ShortPos";
-        return options.filter(cur => !(cur.includes(shortPiece) || cur.includes(farPiece)));
-    }
-    return options;
 }
 
 function awaitPlayerMove(options){
@@ -311,6 +318,7 @@ function userMove(e){
         filteredMove.appendChild(userPiece);
         // If a jump is made we need to allow for the possibility of another turn
     }
+    console.log(jumpOption, "Jump option?")
     return jumpOption ? endTurn("Jumped") : endTurn();
 }
 
@@ -323,7 +331,7 @@ function endTurn(jumped = false){
         resetSelectedPieceProps();
         turn = !turn;
         selectedPiece.inJumpSequence = false;
-        switchTurnsCSS(turn)
+        switchTurnsCSS(turn);
     } else {
         selectedPiece.inJumpSequence = true;
     }
@@ -339,6 +347,11 @@ function checkForWin(){
     } else if (blackPieces.length === 0){
         console.log("Red Wins!")
     }
+}
+
+function kingMe(){
+    // If red piece ends up at the end up
+    // 56 - 63
 }
 
 function switchTurnsCSS(turn){
