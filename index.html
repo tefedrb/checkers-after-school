@@ -9,88 +9,113 @@
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <table>
-            <tr>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="0"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="1"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="2"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="3"></p></td>
-            </tr>
-            <tr>
-                <td><p class="redPiece" id="4"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="5"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="6"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="7"></p></td>
-                <td class="noPieceHere"></td>
-            </tr>
-            <tr>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="8"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="9"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="10"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="redPiece" id="11"></p></td>
-            </tr>
-            <tr>
-                <td></td>
-                <td class="noPieceHere"></td>
-                <td></td>
-                <td class="noPieceHere"></td>
-                <td></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="14"></p></td>
-                <td class="noPieceHere"></td>
-            </tr>
-            <tr>
-                <td class="noPieceHere"></td>
-                <td></td>
-                <td class="noPieceHere"></td>
-                <td></td>
-                <td class="noPieceHere"></td>
-                <td></td>
-                <td class="noPieceHere"></td>
-                <td></td>
-            </tr>
-            <tr>
-                <td><p class="blackPiece" id="12"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="13"></p></td>
-                <td class="noPieceHere"></td>
-                <td></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="15"></p></td>
-                <td class="noPieceHere"></td>
-            </tr>
-            <tr>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="16"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="17"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="18"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="19"></p></td>
-            </tr>
-            <tr>
-                <td><p class="blackPiece" id="20"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="21"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="22"></p></td>
-                <td class="noPieceHere"></td>
-                <td><p class="blackPiece" id="23"></p></td>
-                <td class="noPieceHere"></td>
-            </tr>
-        </table>
+        <div id="boardWrap">
+            <div id="takenTop">
+                <div class="takenBlack"></div>
+                <div class="takenBlack"></div>
+                <div class="takenBlack"></div>
+                <div class="takenBlack"></div>
+                <div class="takenBlack"></div>
+                <div class="takenBlack"></div>
+                <div class="takenBlack"></div>
+            </div>
+            <table>
+                <tr>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="0"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="1"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="2"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="3"></p></td>
+                </tr>
+                <tr>
+                    <td><p class="redPiece" id="4"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="5"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="6"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="7"></p></td>
+                    <td class="noPieceHere"></td>
+                </tr>
+                <tr>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="8"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="9"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="10"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="redPiece" id="11"></p></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="noPieceHere"></td>
+                    <td></td>
+                    <td class="noPieceHere"></td>
+                    <td></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="14"></p></td>
+                    <td class="noPieceHere"></td>
+                </tr>
+                <tr>
+                    <td class="noPieceHere"></td>
+                    <td></td>
+                    <td class="noPieceHere"></td>
+                    <td></td>
+                    <td class="noPieceHere"></td>
+                    <td></td>
+                    <td class="noPieceHere"></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><p class="blackPiece" id="12"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="13"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="15"></p></td>
+                    <td class="noPieceHere"></td>
+                </tr>
+                <tr>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="16"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="17"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="18"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="19"></p></td>
+                </tr>
+                <tr>
+                    <td><p class="blackPiece" id="20"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="21"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="22"></p></td>
+                    <td class="noPieceHere"></td>
+                    <td><p class="blackPiece" id="23"></p></td>
+                    <td class="noPieceHere"></td>
+                </tr>
+            </table>
+            <div id="takenBottom">
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+                <div class="takenRed"></div>
+            </div>
+        </div>
         <section>
             <div class="redTurn"><h1>Red Player</h1></div>
             <p id="divider">-------------           </p>

@@ -28,8 +28,8 @@ body {
 .blackPiece {
     border-radius: 45px;
     border: solid;
-    border-color: black;
-    background-color: black;
+    border-color: #4A456A;
+    background-color: #4A456A;
     width: 48px;
     height: 48px;
     margin: auto;
@@ -63,6 +63,7 @@ body {
     justify-content: center;
     width: 100vw;
     height: 100vh;
+    background-color: #6EB5FF;
 }
 .redTurn {
     color: red;
@@ -72,4 +73,43 @@ body {
 }
 .moveOption {
     border-radius: 100%;
+}
+#boardWrap {
+    display: flex;
+    height: auto;
+}
+#takenTop { 
+    display: flex;
+    flex-direction: column;
+    width: 73px;
+    align-self: flex-start;
+    border: solid #DBFFD6;
+    height: 120px;
+    background-color: #DBFFD6;
+    box-shadow: inset 0px 0px 17px 10px rgba(6, 6, 6, 0.35);
+}
+#takenBottom {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 73px;
+    align-self: flex-end;
+    border: solid #DBFFD6;
+    height: 120px;
+    background-color: #DBFFD6;
+    box-shadow: inset 0px 0px 17px 10px rgba(6, 6, 6, 0.35);
+    /* width: 73px; */
+}
+.takenRed {
+   height: 10px;
+   background-color: red;
+   width: 100%;
+   border-radius: 3px;
+   box-shadow: inset 1px 0px 3px 2px rgba(6, 6, 6, 0.2);
+}
+.takenBlack {
+   height: 10px;
+   background-color: #4A456A;
+   width: 100%;
+   border-radius: 3px;
+   box-shadow: inset 1px 0px 3px 2px rgba(6, 6, 6, 0.2);
 }

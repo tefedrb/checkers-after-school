@@ -65,7 +65,7 @@ function getPlayerPieces() {
 
 function setOpacity(off = false) {
     // getSelectedPiece is a key link in the chain
-    const playerPiece = [...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0] 
+    const playerPiece = [...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0]; 
     for (let i = 0; i < playerPieces.length; i++){
         if(playerPiece === playerPieces[i] && !off){
             playerPieces[i].style.opacity = 1;
@@ -94,9 +94,9 @@ function getSelectedPiece() {
 function isPieceKing() {
     // Call isPieceKing() first when jumping piece
     if (document.getElementById(selectedPiece.pieceId).classList.contains("king")) {
-        selectedPiece.isKing = true
+        selectedPiece.isKing = true;
     } else {
-        selectedPiece.isKing = false
+        selectedPiece.isKing = false;
     }
     getBoardData();
 }
