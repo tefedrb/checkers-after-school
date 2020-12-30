@@ -28,11 +28,8 @@ const giveListeners = () => {
         // board.forEach(cur => cur.removeEventListener("click", getPlayerPieces))
         const bothPieces = [...blackPieces, ...redPieces];
         bothPieces.forEach(cur => cur.removeEventListener("click", beginChainedFunctions));
-        console.log("whytho?!?!?!?!?!?!?!?!? ------------")
-        console.log(selectedPiece.inJumpSequence, "ok then")
         return getPlayerPieces();
     }
-    console.log("here now")
     if (turn) {
         for(let i = 0; i < (jumped ? 0 : blackPieces.length); i++){
             blackPieces[i].removeEventListener("click", beginChainedFunctions);
@@ -63,22 +60,18 @@ function getPlayerPieces() {
     } else {
         playerPieces = blackPieces
     }
-    console.log("in Player pieces")
     getSelectedPiece();
 }
 
 function setOpacity(off = false) {
     // getSelectedPiece is a key link in the chain
-    console.log("in opacity")
     const playerPiece = [...playerPieces].filter(cur => +cur.id === selectedPiece.pieceId)[0] 
-    console.log(playerPiece, "Player", off)
     for (let i = 0; i < playerPieces.length; i++){
         if(playerPiece === playerPieces[i] && !off){
             playerPieces[i].style.opacity = 1;
         } else if(!off){
             playerPieces[i].style.opacity = .2;
         } else if(off){
-            console.log("show all player pieces")
             playerPieces[i].style.opacity = 1;
         }
     }
@@ -108,7 +101,7 @@ function isPieceKing() {
     getBoardData();
 }
 
-function getBoardData() {
+function getBoardData(refresh) {
     let boardData = [];
     for (let i = 0; i < cells.length; i++) {
       index = boardData.length
@@ -130,8 +123,7 @@ function getBoardData() {
     }
     // Saving the current state of the board in our global - remember, these are all references
     board = boardData;
-    // console.log(board, "board!")
-    getAvailableSpaces(board);
+    refresh === "refresh" ? null : getAvailableSpaces(board);
 }
 
 function getAvailableSpaces(allSpaces) {
@@ -155,7 +147,6 @@ function getAvailableSpaces(allSpaces) {
         trueAvailableSpaces.push([...allSpaces[pieceIndex + 9], "FarPos", pieceIndex + 9]);
     }
     // Filter non-kings here
-    // console.log(trueAvailableSpaces, "true")
     getDouble(filterOptionsIfNotKing(trueAvailableSpaces));
 }
 
@@ -318,12 +309,13 @@ function userMove(e){
         filteredMove.appendChild(userPiece);
         // If a jump is made we need to allow for the possibility of another turn
     }
-    console.log(jumpOption, "Jump option?")
     return jumpOption ? endTurn("Jumped") : endTurn();
 }
 
 function endTurn(jumped = false){
     const data = selectedPiece.moveOptions;
+    getBoardData("refresh");
+    kingMe();
     removeMoveListeners(data);
     lightUpOptions(board, false);
     setOpacity(true);
@@ -339,6 +331,7 @@ function endTurn(jumped = false){
     blackPieces = document.querySelectorAll(".blackPiece");
     checkForWin();
     giveListeners();
+    
 }
 
 function checkForWin(){
@@ -350,8 +343,17 @@ function checkForWin(){
 }
 
 function kingMe(){
-    // If red piece ends up at the end up
-    // 56 - 63
+    const playerPiece = turn ? "redPiece" : "blackPiece";
+    const side = turn ? 56 : 0;
+    for(let i = side; i < (turn ? board.length : 8); i++){
+        if(board[i].length > 1){
+            const endSquare = Array.from(board[i][1].classList)
+            if(endSquare.includes(playerPiece) && !endSquare.includes("king")){
+                board[i][1].classList.add("king");
+            }
+        }
+    }
+    
 }
 
 function switchTurnsCSS(turn){
