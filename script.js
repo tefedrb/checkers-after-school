@@ -6,6 +6,36 @@ let blackPieces = document.querySelectorAll(".blackPiece")
 const divider = document.getElementById("divider")
 const redTurn = document.querySelector(".redTurn");
 const blackTurn = document.querySelector(".blackTurn");
+const takenBtmHolder = document.querySelector("#takenBottom");
+const takenTopHolder = document.querySelector("#takenTop");
+
+
+// TODO: Features that should be added / considered
+/**  
+    When a piece becomes a king after a jumping over a piece, does that player get 
+    to move that king right afterwards? 
+**/
+/**  
+    After selecting a piece, all the other players pieces become transparent.
+    There should be an option to deselect that piece and have all the pieces become
+    opaque again.
+**/
+/**  
+    After selecting a piece, all the other players pieces become transparent.
+    There should be an option to deselect that piece and have all the pieces become
+    opaque again.
+**/
+/**  
+    When a player wins, right now there is just an alert - might want to add something
+    else. Also, there should be a button that resets the board.
+**/
+/**  
+    collectPiece() should be made a little more dynamic
+**/
+/**  
+    Keep track of wins - add login so a player can hold onto them.
+**/
+
 
 let redScore = 12
 let blackScore = 12
@@ -153,8 +183,8 @@ function getAvailableSpaces(allSpaces) {
 function filterOptionsIfNotKing(options){
     if(!selectedPiece.isKing){
         // Check for redpieces or blackpieces -> determines direction on board
-        const farPiece = turn ? "FarNeg" : "FarPos";
-        const shortPiece = turn ? "ShortNeg" : "ShortPos";
+        const farPiece = turn ? "FarPos" : "FarNeg";
+        const shortPiece = turn ? "ShortPos" : "ShortNeg";
         return options.filter(cur => !(cur.includes(shortPiece) || cur.includes(farPiece)));
     }
     return options;
@@ -300,6 +330,7 @@ function userMove(e){
     if(enemy && jumpOption){
         // Removes opponents piece from space -> user takes
         enemy.removeChild(enemy.childNodes[0]);
+        collectPiece();
     }
     // Move player piece - using selected piece info
     if(jumpOption || moveOption){
@@ -310,6 +341,17 @@ function userMove(e){
         // If a jump is made we need to allow for the possibility of another turn
     }
     return jumpOption ? endTurn("Jumped") : endTurn();
+}
+
+function collectPiece(){
+    const piece = document.createElement("div");
+    if(turn){
+        piece.classList.add("takenRed");
+        takenTopHolder.appendChild(piece);
+    } else {
+        piece.classList.add("takenBlack");
+        takenBtmHolder.appendChild(piece);
+    }
 }
 
 function endTurn(jumped = false){
@@ -331,21 +373,20 @@ function endTurn(jumped = false){
     blackPieces = document.querySelectorAll(".blackPiece");
     checkForWin();
     giveListeners();
-    
 }
 
 function checkForWin(){
     if(redPieces.length === 0){
-        console.log("Black Wins!")
+        alert("Black Wins!")
     } else if (blackPieces.length === 0){
-        console.log("Red Wins!")
+        alert("Red Wins!")
     }
 }
 
 function kingMe(){
     const playerPiece = turn ? "redPiece" : "blackPiece";
-    const side = turn ? 56 : 0;
-    for(let i = side; i < (turn ? board.length : 8); i++){
+    const side = turn ? 0 : 56;
+    for(let i = side; i < (turn ? 8 : board.length); i++){
         if(board[i].length > 1){
             const endSquare = Array.from(board[i][1].classList)
             if(endSquare.includes(playerPiece) && !endSquare.includes("king")){
