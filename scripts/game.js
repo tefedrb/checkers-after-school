@@ -124,8 +124,12 @@ function resetSelectedPieceProps() {
     selectedPiece.inJumpSequence = false;
 }
 
-function getSelectedPiece() {
-    selectedPiece.inJumpSequence ? null : selectedPiece.pieceId = parseInt(event.target.id);
+function getSelectedPiece(piece) {
+    if (piece) {
+        selectedPiece.pieceId = piece.id
+    } else {
+        selectedPiece.inJumpSequence ? null : selectedPiece.pieceId = parseInt(event.target.id);
+    }
     isPieceKing();
 }
 
@@ -417,5 +421,10 @@ function switchTurnsCSS(turn){
 function removeMoveListeners(data){
     for(let option in data){
         board[option][0].removeEventListener("click", userMove);
+    }
+}
+function getAllPlayerMoves(pieces) {
+    for (let i = 0; i < pieces.length; i++) {
+        getSelectedPiece(pieces[i])
     }
 }
