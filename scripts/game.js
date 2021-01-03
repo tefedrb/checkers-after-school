@@ -13,10 +13,10 @@ const takenTopHolder = document.querySelector("#takenTop");
 // TODO: Features that should be added / considered
 /**  
     When a piece becomes a king after a jumping over a piece, does that player get 
-    to move that king right afterwards? 
+    to move that king right afterwards?
 **/
 /**  
-    After selecting a piece, all the other players pieces become transparent.
+    After selecting a piece, all the other player pieces become transparent.
     There should be an option to deselect that piece and have all the pieces become
     opaque again.
 **/
@@ -32,14 +32,18 @@ const takenTopHolder = document.querySelector("#takenTop");
 /**  
     collectPiece() should be made a little more dynamic
 **/
+
 /**  
     Keep track of wins - add login so a player can hold onto them.
 **/
+
 /** 
    consider turning board / game / piece into classes
 **/
 
-
+/*
+    Reverse piece graveyard
+*/
 
 let redScore = 12
 let blackScore = 12
@@ -162,7 +166,7 @@ function getBoardData(refresh) {
 
 function getAvailableSpaces(allSpaces) {
     // True available spaces narrows down the 4 immediate squares surrounding our selected piece
-    let trueAvailableSpaces = []
+    let trueAvailableSpaces = [];
 
     const pieceIndex = selectedPiece.indexOfBoardPiece;
     // I decided to use the spread operator to create a new array and therefore a new reference to the DOM nodes
@@ -350,10 +354,10 @@ function userMove(e){
 function collectPiece(){
     const piece = document.createElement("div");
     if(turn){
-        piece.classList.add("takenRed");
+        piece.classList.add("takenBlack");
         takenTopHolder.appendChild(piece);
     } else {
-        piece.classList.add("takenBlack");
+        piece.classList.add("takenRed");
         takenBtmHolder.appendChild(piece);
     }
 }
@@ -398,7 +402,6 @@ function kingMe(){
             }
         }
     }
-    
 }
 
 function switchTurnsCSS(turn){
