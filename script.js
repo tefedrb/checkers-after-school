@@ -35,6 +35,10 @@ const takenTopHolder = document.querySelector("#takenTop");
 /**  
     Keep track of wins - add login so a player can hold onto them.
 **/
+/** 
+   consider turning board / game / piece into classes
+**/
+
 
 
 let redScore = 12
